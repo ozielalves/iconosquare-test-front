@@ -10,7 +10,7 @@ const Header = () => {
                     <div className="text-gray-600 text-lg leading-8">
                         <p className="my-6 ">
                             The following graph is a simulation of a live stream of events which refresh every 2s. 
-                            The events are stored in a redux store. We want to be able to edit some events.
+                            The events are stored in a context. We want to be able to edit some events.
                         </p>
                         <h2 className="underline">Please add the following features:</h2>
                         <ul className="list-decimal list-inside mb-3">
@@ -22,6 +22,7 @@ const Header = () => {
                             <li>Clicking on the chart may open the cell `value1` of the corresponding event</li>
                             <li>A button may be added to reset all the updated values</li>
                             <li>Add some components in the UI that allow to navigate in time.</li>
+                            <li>Migrate the project in Typescript</li>
                         </ul>
                         <h2 className="underline">Additional information:</h2>
                         <ul className="list-disc list-inside">
