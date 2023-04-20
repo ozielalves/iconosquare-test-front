@@ -2,7 +2,7 @@
     <img align="center" src="https://www.leslivresblancs.fr/sites/default/files/iconosquare-logo.png" style="width: 400px">
 </p>
 
-# Test Front - React
+# React technical test
 
 ### Instructions
 
