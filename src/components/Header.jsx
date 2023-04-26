@@ -14,20 +14,22 @@ const Header = () => {
                         </p>
                         <h2 className="underline">Please add the following features:</h2>
                         <ul className="list-decimal list-inside mb-3">
+                            <li>Add a button to pause/play.</li>
                             <li>Clicking on a cell makes it editable and allows editing its value.</li>
-                            <li>The chart must show the correct value.</li>
-                            <li>Clicking on the chart may open the cell `value1` of the corresponding event</li>
+                            <li>The correct value should be displayed.</li>
+                            <li>Clicking on the chart may open the cell `value1` of the corresponding event.</li>
                         </ul>
                         <h2 className="underline">Bonus:</h2>
                         <ul className="list-decimal list-inside mb-3">
-                            <li>A button may be added to reset all the updated values</li>
+                            <li>A button may be added to reset all the updated values.</li>
                             <li>Add some components in the UI that allow navigating in time.</li>
-                            <li>Migrate the project to Typescript</li>
+                            <li>Migrate the project to Typescript.</li>
                         </ul>
                         <h2 className="underline">Additional information:</h2>
                         <ul className="list-disc list-inside">
                             <li>The `Container` file must not be edited. Consider that this is the only constraint.</li>
                             <li>Use the UI/UX you consider working well for the use case.</li>
+                            <li>You may use any library you find useful for this use case.</li>
                         </ul>
                     </div>
                 </div>
