@@ -1,11 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { LiveChartProvider, useLiveChartContext } from '../utils/hooks/useLiveChartContext';
 import { createRandomEvent } from '../utils/utils';
-import LiveTable from './LiveTable';
-import LiveChart from './LiveChart';
+import Content from './Content'
 
-
-const Content = () => {
+const ContainerContent = () => {
     const currentIndex = useRef(50);
     const { dispatch } = useLiveChartContext()
 
@@ -20,18 +18,13 @@ const Content = () => {
 	    // eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
-    return (
-        <div className="mx-auto max-w-7xl px-8">
-            <LiveChart />
-            <LiveTable />
-        </div>
-    )
-}
+    return <Content />
+} 
 
 const Container = () => {
     return (
         <LiveChartProvider>
-            <Content />
+            <ContainerContent />
         </LiveChartProvider>
     );
 };
