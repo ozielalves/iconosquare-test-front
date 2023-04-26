@@ -14,8 +14,9 @@
 
 You have to do some tasks on a graph and a table which are a simulation of a live stream of events that refreshes every 2s. 
 
+- Add a button to pause/play.
 - Clicking on a cell makes it editable and allows to edit its value.
-- The chart must show the correct value.
+- The correct value should be displayed.
 - Clicking on the chart may open the cell `value1` of the corresponding event
 
 ### Bonus
@@ -27,3 +28,4 @@ You have to do some tasks on a graph and a table which are a simulation of a liv
 ### Additional information
 - The `Container` file must not be edited. Consider that this is the only constraint.
 - Use the ui/ux you consider working well for the use case.
+- You may use any library you find useful for this use case.
