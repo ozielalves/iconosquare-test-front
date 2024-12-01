@@ -1,20 +1,20 @@
 import React, { createContext, useCallback, useContext, useReducer, useRef, useState } from "react";
 
-import { CHART_EVENTS } from "../../const";
+import { CHART_EVENTS, CHART_NAVIGATION_STEP } from "../../const";
 import { createRandomEvent } from "../utils";
 import LiveChartService from "../../services/LiveChartService";
-
-const LiveChartContext = createContext({
-    data: { events: [] },
-    dispatch: () => {},
-    paused: false,
-    togglePaused: () => {},
-});
 
 const initialEvents = Array.from(Array(50)).map((_, ix) => createRandomEvent(ix));
 
 const initialData = Object.freeze({
     events: initialEvents,
+    eventRange: { start: 0, end: CHART_NAVIGATION_STEP },
+});
+
+const LiveChartContext = createContext({
+    data: initialData,
+    paused: false,
+    eventToEdit: null,
 });
 
 const LiveChartProvider = ({ children }) => {
@@ -28,7 +28,7 @@ const LiveChartProvider = ({ children }) => {
     const isPaused = useRef(paused);
     const wasPausedByInteraction = useRef(false);
 
-    const togglePaused = useCallback((isInteraction = false) => {
+    const togglePaused = useCallback(({ isInteraction = false } = {}) => {
         wasPausedByInteraction.current = isInteraction;
 
         setPaused((prev) => {
@@ -81,17 +81,35 @@ const LiveChartProvider = ({ children }) => {
         dispatchEvent({ type: CHART_EVENTS.RESET_EVENTS });
     }, [dispatchEvent]);
 
+    const navigateBack = useCallback(() => {
+        dispatchEvent({ type: CHART_EVENTS.NAVIGATE_BACK });
+    }, [dispatchEvent]);
+
+    const navigateForward = useCallback(() => {
+        dispatchEvent({ type: CHART_EVENTS.NAVIGATE_FORWARD });
+    }, [dispatchEvent]);
+
     return (
         <LiveChartContext.Provider
             value={{
                 data,
                 dispatch: handleDispatch,
+
+                // Play/Pause
+                paused,
+                togglePaused,
+
+                // Event Edit
                 editEvent: handleEditEvent,
                 eventToEdit,
                 openEventEditor: handleOpenEventEditor,
-                paused,
+
+                // Reset
                 resetData,
-                togglePaused,
+
+                // Navigation
+                navigateBack,
+                navigateForward,
             }}
         >
             {children}
@@ -101,6 +119,7 @@ const LiveChartProvider = ({ children }) => {
 
 const useLiveChartContext = () => {
     const context = useContext(LiveChartContext);
+
     if (!context) {
         throw new Error("useLiveChartContext should be used within an LiveChartProvider");
     }

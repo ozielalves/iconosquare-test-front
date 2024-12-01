@@ -4,10 +4,9 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import { useLiveChartContext } from "../utils/hooks/useLiveChartContext";
 
 const LiveChart = () => {
-    const { data, openEventEditor,} = useLiveChartContext();
-
-    const nbTotalEvents = data?.events?.length;
-    const eventsFiltered = data.events.slice(nbTotalEvents - 20, nbTotalEvents);
+    const { data, openEventEditor } = useLiveChartContext();
+    
+    const eventsFiltered = data.events.slice(data.eventRange.start, data.eventRange.end);
 
     const handleChartClick = (chartClickEvent) => {
         const eventToEdit = chartClickEvent?.activePayload?.[0]?.payload;

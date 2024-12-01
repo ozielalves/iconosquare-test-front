@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 
-import { ArrowUturnDownIcon, PauseIcon, PlayIcon } from "@heroicons/react/24/solid";
+import { ArrowUturnDownIcon, ChevronLeftIcon, ChevronRightIcon, PauseIcon, PlayIcon } from "@heroicons/react/24/solid";
 
 import { useLiveChartContext } from "../utils/hooks/useLiveChartContext";
 import Button from "./Button";
@@ -8,7 +8,7 @@ import LiveChart from "./LiveChart";
 import LiveTable from "./LiveTable";
 
 const Content = () => {
-    const { data, paused, resetData, togglePaused } = useLiveChartContext();
+    const { data, paused, resetData, togglePaused, navigateBack, navigateForward } = useLiveChartContext();
 
     const showResetButton = useMemo(() => data?.events?.some(({ originalEvent }) => originalEvent), [data]);
 
@@ -17,7 +17,7 @@ const Content = () => {
     };
 
     const handlePlayPause = () => {
-        togglePaused(true);
+        togglePaused({ isInteraction: true });
     };
 
     return (
@@ -34,12 +34,28 @@ const Content = () => {
                     )}
                 </div>
 
-                <div className="flex gap-4 mb-4">
+                <div className="flex gap-4">
+                    <Button
+                        className="bg-blue-500"
+                        icon={<ChevronLeftIcon className="w-5 h-5" />}
+                        onClick={navigateBack}
+                        text="Previous"
+                        disabled={data.eventRange.start === 0}
+                    />
+
                     <Button
                         className="w-28 bg-blue-500"
                         icon={paused ? <PlayIcon className="w-5 h-5" /> : <PauseIcon className="w-5 h-5" />}
                         onClick={handlePlayPause}
                         text={paused ? "Play" : "Pause"}
+                    />
+
+                    <Button
+                        className="bg-blue-500"
+                        icon={<ChevronRightIcon className="w-5 h-5" />}
+                        onClick={navigateForward}
+                        text="Next"
+                        disabled={data.eventRange.end >= data.events.length}
                     />
                 </div>
             </div>

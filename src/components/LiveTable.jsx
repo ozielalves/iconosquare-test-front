@@ -4,8 +4,8 @@ import { useLiveChartContext } from "../utils/hooks/useLiveChartContext";
 
 const LiveTable = () => {
     const { data, eventToEdit, editEvent, openEventEditor } = useLiveChartContext();
-    const nbTotalEvents = data?.events?.length;
-    const eventsFiltered = data.events.slice(nbTotalEvents - 20, nbTotalEvents);
+
+    const eventsFiltered = data.events.slice(data.eventRange.start, data.eventRange.end);
 
     const [eventValue, setEventValue] = useState(0);
 
@@ -14,7 +14,6 @@ const LiveTable = () => {
     }, [eventToEdit]);
 
     const getCellClickHandler = (event, rowKey) => () => {
-        console.log(rowKey);
         openEventEditor({ ...event, rowKey });
     };
 
