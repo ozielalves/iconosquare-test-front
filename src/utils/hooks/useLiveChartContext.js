@@ -19,10 +19,20 @@ const addNewEvent = (state, payload) => ({
     events: [...state.events, payload],
 });
 
+const updateEvent = (state, payload) => {
+    const updatedEvents = state.events.map((event) =>
+        event.index === payload.index ? { ...event, ...payload } : event
+    );
+    console.log({ updatedEvents });
+    return { events: updatedEvents };
+};
+
 const liveChartReducer = (state, action) => {
     switch (action.type) {
         case CHART_EVENTS.NEW_EVENT:
             return addNewEvent(state, action.payload);
+        case CHART_EVENTS.UPDATE_EVENT:
+            return updateEvent(state, action.payload);
         default: {
             throw new Error(`Unhandled action type: ${action.type}`);
         }
