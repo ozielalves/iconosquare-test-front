@@ -1,6 +1,8 @@
 import React, { createContext, useCallback, useContext, useReducer, useRef, useState } from "react";
+
 import { CHART_EVENTS } from "../../const";
 import { createRandomEvent } from "../utils";
+import LiveChartService from "../../services/LiveChartService";
 
 const LiveChartContext = createContext({
     data: { events: [] },
@@ -15,40 +17,20 @@ const initialData = Object.freeze({
     events: initialEvents,
 });
 
-const addNewEvent = (state, payload) => ({
-    events: [...state.events, payload],
-});
-
-const updateEvent = (state, payload) => {
-    const updatedEvents = state.events.map((event) =>
-        event.index === payload.index ? { ...event, ...payload } : event
-    );
-
-    return { events: updatedEvents };
-};
-
-const liveChartReducer = (state, action) => {
-    switch (action.type) {
-        case CHART_EVENTS.NEW_EVENT:
-            return addNewEvent(state, action.payload);
-        case CHART_EVENTS.UPDATE_EVENT:
-            return updateEvent(state, action.payload);
-        default: {
-            throw new Error(`Unhandled action type: ${action.type}`);
-        }
-    }
-};
-
 const LiveChartProvider = ({ children }) => {
-    const [data, dispatchEvent] = useReducer(liveChartReducer, initialData);
+    const liveChartService = useRef(new LiveChartService());
+
+    const [data, dispatchEvent] = useReducer(liveChartService.current.liveChartReducer, initialData);
 
     const [paused, setPaused] = useState(false);
     const [eventToEdit, setEventToEdit] = useState(null);
 
-    // Track the latest paused state
     const isPaused = useRef(paused);
+    const wasPausedByInteraction = useRef(false);
 
-    const togglePaused = useCallback(() => {
+    const togglePaused = useCallback((isInteraction = false) => {
+        wasPausedByInteraction.current = isInteraction;
+
         setPaused((prev) => {
             isPaused.current = !prev;
             return !prev;
@@ -77,31 +59,38 @@ const LiveChartProvider = ({ children }) => {
 
     const handleEditEvent = useCallback(
         (payload) => {
-            if (payload.index !== null) {
+            if (payload.index !== null && payload[eventToEdit?.rowKey] !== eventToEdit[eventToEdit?.rowKey]) {
+                delete eventToEdit.rowKey;
+
                 dispatchEvent({
                     type: CHART_EVENTS.UPDATE_EVENT,
-                    payload,
+                    payload: { originalEvent: { ...eventToEdit }, ...payload },
                 });
             }
 
-            if (isPaused.current) {
+            if (isPaused.current && !wasPausedByInteraction.current) {
                 togglePaused();
             }
 
             setEventToEdit(null);
         },
-        [togglePaused]
+        [eventToEdit, togglePaused]
     );
+
+    const resetData = useCallback(() => {
+        dispatchEvent({ type: CHART_EVENTS.RESET_EVENTS });
+    }, [dispatchEvent]);
 
     return (
         <LiveChartContext.Provider
             value={{
                 data,
                 dispatch: handleDispatch,
-                openEventEditor: handleOpenEventEditor,
-                eventToEdit,
                 editEvent: handleEditEvent,
+                eventToEdit,
+                openEventEditor: handleOpenEventEditor,
                 paused,
+                resetData,
                 togglePaused,
             }}
         >

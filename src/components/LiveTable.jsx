@@ -7,18 +7,22 @@ const LiveTable = () => {
     const nbTotalEvents = data?.events?.length;
     const eventsFiltered = data.events.slice(nbTotalEvents - 20, nbTotalEvents);
 
-    const [eventValue, setEventValue] = useState("");
+    const [eventValue, setEventValue] = useState(0);
 
     useEffect(() => {
-        setEventValue(eventToEdit?.[eventToEdit.rowKey] || "");
+        setEventValue(eventToEdit?.[eventToEdit?.rowKey] || 0);
     }, [eventToEdit]);
 
     const getCellClickHandler = (event, rowKey) => () => {
-        openEventEditor({ rowKey, ...event });
+        console.log(rowKey);
+        openEventEditor({ ...event, rowKey });
     };
 
     const handleBlur = () => {
-        editEvent({ ...eventToEdit, [eventToEdit.rowKey]: eventValue });
+        const payload = { ...eventToEdit, [eventToEdit.rowKey]: eventValue };
+        delete payload.rowKey;
+
+        editEvent(payload);
     };
 
     const handleCellChange = (syntheticBaseEvent) => {
@@ -59,9 +63,11 @@ const LiveTable = () => {
                 <div className="p-2 border-t border-gray-300">Value 1</div>
                 <div className="p-2 border-t border-gray-300">Value 2</div>
             </div>
+
             {eventsFiltered.map((event) => (
                 <div key={event.index} className="border-l border-gray-300 flex-1">
                     <div className="p-2">{event.index}</div>
+
                     {renderCell(event, "value1")}
                     {renderCell(event, "value2")}
                 </div>

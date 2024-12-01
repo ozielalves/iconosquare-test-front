@@ -1,10 +1,10 @@
 import React from "react";
-import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis, ResponsiveContainer } from "recharts";
-import { PauseIcon, PlayIcon } from "@heroicons/react/24/solid";
+
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useLiveChartContext } from "../utils/hooks/useLiveChartContext";
 
 const LiveChart = () => {
-    const { data, openEventEditor, paused, togglePaused } = useLiveChartContext();
+    const { data, openEventEditor,} = useLiveChartContext();
 
     const nbTotalEvents = data?.events?.length;
     const eventsFiltered = data.events.slice(nbTotalEvents - 20, nbTotalEvents);
@@ -19,16 +19,6 @@ const LiveChart = () => {
 
     return (
         <div className="mb-8">
-            <div className="flex justify-end mb-4">
-                <button
-                    onClick={togglePaused}
-                    className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600 transition w-28 justify-center"
-                >
-                    {paused ? <PlayIcon className="w-5 h-5" /> : <PauseIcon className="w-5 h-5" />}
-                    <span>{paused ? "Play" : "Pause"}</span>
-                </button>
-            </div>
-
             <ResponsiveContainer height={250}>
                 <AreaChart
                     onClick={handleChartClick}
