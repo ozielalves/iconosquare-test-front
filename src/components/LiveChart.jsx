@@ -22,7 +22,7 @@ const LiveChart = () => {
       <div className="flex justify-end mb-4">
         <button
           onClick={togglePaused}
-          className="flex items-center gap-2 bg-gray-800 text-white px-4 py-2 rounded-md shadow hover:bg-gray-700 transition w-28 justify-center"
+          className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600 transition w-28 justify-center"
         >
           {paused ? (
             <PlayIcon className="w-5 h-5" />
