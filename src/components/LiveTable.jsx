@@ -1,49 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useLiveChartContext } from "../utils/hooks/useLiveChartContext";
-import { CHART_EVENTS } from "../const";
 
 const LiveTable = () => {
-    const { data, paused, dispatch, togglePaused } = useLiveChartContext();
+    const { data, eventToEdit, editEvent, openEventEditor } = useLiveChartContext();
     const nbTotalEvents = data?.events?.length;
     const eventsFiltered = data.events.slice(nbTotalEvents - 20, nbTotalEvents);
 
-    const [editingEvent, setEditingEvent] = useState(null);
+    const [eventValue, setEventValue] = useState("");
+
+    useEffect(() => {
+        setEventValue(eventToEdit?.[eventToEdit.rowKey] || "");
+    }, [eventToEdit]);
 
     const getCellClickHandler = (event, rowKey) => () => {
-        setEditingEvent({ rowKey, ...event });
-
-        if (!paused) {
-            togglePaused();
-        }
+        openEventEditor({ rowKey, ...event });
     };
 
     const handleBlur = () => {
-        if (paused) {
-            togglePaused();
-        }
-
-        if (editingEvent.index !== null) {
-            const payload = { ...editingEvent };
-            delete payload.rowKey;
-
-            dispatch({
-                type: CHART_EVENTS.UPDATE_EVENT,
-                payload,
-            });
-        }
-
-        setEditingEvent(null);
+        editEvent({ ...eventToEdit, [eventToEdit.rowKey]: eventValue });
     };
 
-    const getCellChangeHandler = (field) => (syntheticBaseEvent) => {
+    const handleCellChange = (syntheticBaseEvent) => {
         const value = syntheticBaseEvent.target.value;
 
         if (/^\d*$/.test(value)) {
-            setEditingEvent((prev) => ({
-                ...prev,
-                [field]: value,
-            }));
+            setEventValue(+value || 0);
         }
     };
 
@@ -53,13 +35,13 @@ const LiveTable = () => {
                 className="relative p-2 border-t border-gray-300 max-w-[70px]"
                 onClick={getCellClickHandler(event, rowKey)}
             >
-                {editingEvent?.index === event.index && editingEvent?.rowKey === rowKey && (
+                {eventToEdit?.index === event.index && eventToEdit?.rowKey === rowKey && (
                     <input
                         type="text"
                         name={rowKey}
-                        value={editingEvent[rowKey]}
+                        value={eventValue}
                         onBlur={handleBlur}
-                        onChange={getCellChangeHandler(rowKey)}
+                        onChange={handleCellChange}
                         className="absolute max-w-[70px] p-2 top-0 z-10 right-1/2 translate-x-1/2 transform focus:outline-none focus:ring-2 focus:ring-blue-500 border border-transparent text-center bg-white shadow-lg "
                         autoFocus
                     />

@@ -23,7 +23,7 @@ const updateEvent = (state, payload) => {
     const updatedEvents = state.events.map((event) =>
         event.index === payload.index ? { ...event, ...payload } : event
     );
-    console.log({ updatedEvents });
+
     return { events: updatedEvents };
 };
 
@@ -41,7 +41,9 @@ const liveChartReducer = (state, action) => {
 
 const LiveChartProvider = ({ children }) => {
     const [data, dispatchEvent] = useReducer(liveChartReducer, initialData);
+
     const [paused, setPaused] = useState(false);
+    const [eventToEdit, setEventToEdit] = useState(null);
 
     // Track the latest paused state
     const isPaused = useRef(paused);
@@ -53,7 +55,7 @@ const LiveChartProvider = ({ children }) => {
         });
     }, []);
 
-    const sendEvent = useCallback(
+    const handleDispatch = useCallback(
         (event) => {
             if (!isPaused.current) {
                 dispatchEvent(event);
@@ -62,11 +64,43 @@ const LiveChartProvider = ({ children }) => {
         [dispatchEvent]
     );
 
+    const handleOpenEventEditor = useCallback(
+        (event) => {
+            if (!isPaused.current) {
+                togglePaused();
+            }
+
+            setEventToEdit({ rowKey: "value1", ...event });
+        },
+        [togglePaused, setEventToEdit]
+    );
+
+    const handleEditEvent = useCallback(
+        (payload) => {
+            if (payload.index !== null) {
+                dispatchEvent({
+                    type: CHART_EVENTS.UPDATE_EVENT,
+                    payload,
+                });
+            }
+
+            if (isPaused.current) {
+                togglePaused();
+            }
+
+            setEventToEdit(null);
+        },
+        [togglePaused]
+    );
+
     return (
         <LiveChartContext.Provider
             value={{
                 data,
-                dispatch: sendEvent,
+                dispatch: handleDispatch,
+                openEventEditor: handleOpenEventEditor,
+                eventToEdit,
+                editEvent: handleEditEvent,
                 paused,
                 togglePaused,
             }}
