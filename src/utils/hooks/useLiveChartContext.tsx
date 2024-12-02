@@ -18,7 +18,7 @@ interface LiveChartContextType {
     eventToEdit: ChartEvent | null;
     dispatch: React.Dispatch<{ type: ChartEvents; payload: ChartEvent }>;
     togglePaused: (options?: { isInteraction?: boolean }) => void;
-    editEvent: (payload: any) => void;
+    editEvent: (payload: ChartEvent) => void;
     openEventEditor: (event: ChartEvent) => void;
     resetData: () => void;
     navigateBack: () => void;
@@ -52,7 +52,7 @@ const LiveChartProvider: React.FC<LiveChartProviderProps> = ({ children }) => {
     }, []);
 
     const handleDispatch = useCallback(
-        (event: any) => {
+        (event: { type: ChartEvents; payload: ChartEvent }) => {
             if (!isPaused.current) {
                 dispatchEvent(event);
             }
@@ -72,7 +72,7 @@ const LiveChartProvider: React.FC<LiveChartProviderProps> = ({ children }) => {
     );
 
     const handleEditEvent = useCallback(
-        (payload: any) => {
+        (payload: ChartEvent) => {
             if (
                 payload.index !== null &&
                 eventToEdit?.rowKey &&
@@ -106,7 +106,6 @@ const LiveChartProvider: React.FC<LiveChartProviderProps> = ({ children }) => {
     const navigateForward = useCallback(() => {
         dispatchEvent({ type: ChartEvents.NAVIGATE_FORWARD });
     }, [dispatchEvent]);
-
 
     return (
         <LiveChartContext.Provider
