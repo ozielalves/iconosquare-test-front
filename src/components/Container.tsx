@@ -7,7 +7,7 @@ import { createRandomEvent } from "../utils/utils";
 import Content from "./Content";
 
 const ContainerContent: React.FC = () => {
-    const currentIndex = useRef<number>(50); // O valor inicial de currentIndex é 50
+    const currentIndex = useRef<number>(50);
     const { dispatch } = useLiveChartContext();
 
     useEffect(() => {
@@ -20,7 +20,7 @@ const ContainerContent: React.FC = () => {
 
         return () => clearInterval(intervalId);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dispatch]); // Add dispatch as a dependency (though dispatch is stable in context)
+    }, []);
 
     return <Content />;
 };
