@@ -1,5 +1,6 @@
 import LiveChartService from "./LiveChartService";
-import { CHART_NAVIGATION_STEP, ChartEvents } from "../const";
+import { CHART_NAVIGATION_STEP } from "../const";
+import { ChartEvents } from "../types";
 
 describe("LiveChartService", () => {
     let liveChartService: LiveChartService;

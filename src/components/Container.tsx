@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 
-import { ChartEvents } from "../const";
+import { ChartEvents } from "../types";
 import { LiveChartProvider, useLiveChartContext } from "../utils/hooks/useLiveChartContext";
 import { createRandomEvent } from "../utils/utils";
 

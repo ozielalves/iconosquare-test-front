@@ -1,5 +1,5 @@
-import { CHART_NAVIGATION_STEP, ChartEvents } from "../const";
-import { ChartEvent, LiveChartState } from "../types";
+import { CHART_NAVIGATION_STEP } from "../const";
+import { ChartEvents, ChartEvent, LiveChartState } from "../types";
 
 export default class LiveChartService {
     step = CHART_NAVIGATION_STEP;

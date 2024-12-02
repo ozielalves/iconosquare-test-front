@@ -1,9 +1,9 @@
-import React, { createContext, useCallback, useContext, useReducer, useRef, useState, ReactNode } from "react";
+import React, { createContext, ReactNode, useCallback, useContext, useReducer, useRef, useState } from "react";
 
-import { ChartEvents, CHART_NAVIGATION_STEP } from "../../const";
-import { ChartEvent, LiveChartState } from "../../types";
-import { createRandomEvent } from "../utils";
+import { CHART_NAVIGATION_STEP } from "../../const";
 import LiveChartService from "../../services/LiveChartService";
+import { ChartEvent, ChartEvents, LiveChartState } from "../../types";
+import { createRandomEvent } from "../utils";
 
 const initialEvents: ChartEvent[] = Array.from(Array(50)).map((_, ix) => createRandomEvent(ix));
 
