@@ -42,7 +42,7 @@ const LiveTable = () => {
     const renderCell = (event: ChartEvent, rowKey: RowKey) => {
         return (
             <button
-                className="all-[unset] relative p-2 border-t border-gray-300 max-w-[70px]"
+                className="all-[unset] w-[100%] relative p-2 border-t border-gray-300 max-w-[70px]"
                 onClick={getCellClickHandler(event, rowKey)}
             >
                 {eventToEdit?.index === event.index && eventToEdit?.rowKey === rowKey && (
@@ -52,6 +52,7 @@ const LiveTable = () => {
                         value={eventValue}
                         onBlur={handleBlur}
                         onChange={handleCellChange}
+                        onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
                         className="absolute max-w-[70px] p-2 top-0 z-10 right-1/2 translate-x-1/2 transform focus:outline-none focus:ring-2 focus:ring-blue-500 border border-transparent text-center bg-white shadow-lg "
                         autoFocus
                     />
