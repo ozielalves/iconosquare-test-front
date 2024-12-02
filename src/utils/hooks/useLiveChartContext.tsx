@@ -1,34 +1,48 @@
-import React, { createContext, useCallback, useContext, useReducer, useRef, useState } from "react";
+import React, { createContext, useCallback, useContext, useReducer, useRef, useState, ReactNode } from "react";
 
-import { CHART_EVENTS, CHART_NAVIGATION_STEP } from "../../const";
+import { ChartEvents, CHART_NAVIGATION_STEP } from "../../const";
+import { ChartEvent, LiveChartState } from "../../types";
 import { createRandomEvent } from "../utils";
 import LiveChartService from "../../services/LiveChartService";
 
-const initialEvents = Array.from(Array(50)).map((_, ix) => createRandomEvent(ix));
+const initialEvents: ChartEvent[] = Array.from(Array(50)).map((_, ix) => createRandomEvent(ix));
 
-const initialData = Object.freeze({
+const initialData: LiveChartState = {
     events: initialEvents,
     eventRange: { start: 0, end: CHART_NAVIGATION_STEP },
-});
+};
 
-const LiveChartContext = createContext({
-    data: initialData,
-    paused: false,
-    eventToEdit: null,
-});
+interface LiveChartContextType {
+    data: LiveChartState;
+    paused: boolean;
+    eventToEdit: ChartEvent | null;
+    dispatch: React.Dispatch<{ type: ChartEvents; payload: ChartEvent }>;
+    togglePaused: (options?: { isInteraction?: boolean }) => void;
+    editEvent: (payload: any) => void;
+    openEventEditor: (event: ChartEvent) => void;
+    resetData: () => void;
+    navigateBack: () => void;
+    navigateForward: () => void;
+}
 
-const LiveChartProvider = ({ children }) => {
+const LiveChartContext = createContext<LiveChartContextType | null>(null);
+
+interface LiveChartProviderProps {
+    children: ReactNode;
+}
+
+const LiveChartProvider: React.FC<LiveChartProviderProps> = ({ children }) => {
     const liveChartService = useRef(new LiveChartService());
 
     const [data, dispatchEvent] = useReducer(liveChartService.current.liveChartReducer, initialData);
 
-    const [paused, setPaused] = useState(false);
-    const [eventToEdit, setEventToEdit] = useState(null);
+    const [paused, setPaused] = useState<boolean>(false);
+    const [eventToEdit, setEventToEdit] = useState<ChartEvent | null>(null);
 
-    const isPaused = useRef(paused);
-    const wasPausedByInteraction = useRef(false);
+    const isPaused = useRef<boolean>(paused);
+    const wasPausedByInteraction = useRef<boolean>(false);
 
-    const togglePaused = useCallback(({ isInteraction = false } = {}) => {
+    const togglePaused = useCallback(({ isInteraction = false }: { isInteraction?: boolean } = {}) => {
         wasPausedByInteraction.current = isInteraction;
 
         setPaused((prev) => {
@@ -38,7 +52,7 @@ const LiveChartProvider = ({ children }) => {
     }, []);
 
     const handleDispatch = useCallback(
-        (event) => {
+        (event: any) => {
             if (!isPaused.current) {
                 dispatchEvent(event);
             }
@@ -47,7 +61,7 @@ const LiveChartProvider = ({ children }) => {
     );
 
     const handleOpenEventEditor = useCallback(
-        (event) => {
+        (event: ChartEvent) => {
             if (!isPaused.current) {
                 togglePaused();
             }
@@ -58,12 +72,16 @@ const LiveChartProvider = ({ children }) => {
     );
 
     const handleEditEvent = useCallback(
-        (payload) => {
-            if (payload.index !== null && payload[eventToEdit?.rowKey] !== eventToEdit[eventToEdit?.rowKey]) {
+        (payload: any) => {
+            if (
+                payload.index !== null &&
+                eventToEdit?.rowKey &&
+                payload[eventToEdit.rowKey] !== eventToEdit[eventToEdit.rowKey]
+            ) {
                 delete eventToEdit.rowKey;
 
                 dispatchEvent({
-                    type: CHART_EVENTS.UPDATE_EVENT,
+                    type: ChartEvents.UPDATE_EVENT,
                     payload: { originalEvent: { ...eventToEdit }, ...payload },
                 });
             }
@@ -78,36 +96,29 @@ const LiveChartProvider = ({ children }) => {
     );
 
     const resetData = useCallback(() => {
-        dispatchEvent({ type: CHART_EVENTS.RESET_EVENTS });
+        dispatchEvent({ type: ChartEvents.RESET_EVENTS });
     }, [dispatchEvent]);
 
     const navigateBack = useCallback(() => {
-        dispatchEvent({ type: CHART_EVENTS.NAVIGATE_BACK });
+        dispatchEvent({ type: ChartEvents.NAVIGATE_BACK });
     }, [dispatchEvent]);
 
     const navigateForward = useCallback(() => {
-        dispatchEvent({ type: CHART_EVENTS.NAVIGATE_FORWARD });
+        dispatchEvent({ type: ChartEvents.NAVIGATE_FORWARD });
     }, [dispatchEvent]);
+
 
     return (
         <LiveChartContext.Provider
             value={{
                 data,
-                dispatch: handleDispatch,
-
-                // Play/Pause
                 paused,
-                togglePaused,
-
-                // Event Edit
-                editEvent: handleEditEvent,
                 eventToEdit,
+                dispatch: handleDispatch,
+                togglePaused,
+                editEvent: handleEditEvent,
                 openEventEditor: handleOpenEventEditor,
-
-                // Reset
                 resetData,
-
-                // Navigation
                 navigateBack,
                 navigateForward,
             }}
@@ -117,7 +128,7 @@ const LiveChartProvider = ({ children }) => {
     );
 };
 
-const useLiveChartContext = () => {
+const useLiveChartContext = (): LiveChartContextType => {
     const context = useContext(LiveChartContext);
 
     if (!context) {

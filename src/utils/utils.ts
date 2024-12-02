@@ -1,8 +1,10 @@
-export function createRandomEvent(index) {
+import { ChartEvent } from "../types";
+
+export function createRandomEvent(index: number): ChartEvent {
     return {
         index,
         value1: Math.round(Math.random() * 10000),
         value2: Math.round(Math.random() * 10000),
         comment: `Random comment ${index}`,
-    }
+    };
 }

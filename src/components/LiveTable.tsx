@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
+import { ChartEvent, RowKey } from "../types";
 import { useLiveChartContext } from "../utils/hooks/useLiveChartContext";
 
 const LiveTable = () => {
@@ -10,21 +11,27 @@ const LiveTable = () => {
     const [eventValue, setEventValue] = useState(0);
 
     useEffect(() => {
-        setEventValue(eventToEdit?.[eventToEdit?.rowKey] || 0);
+        if (eventToEdit?.rowKey) {
+            setEventValue(eventToEdit[eventToEdit.rowKey as keyof ChartEvent] as number);
+        } else {
+            setEventValue(0);
+        }
     }, [eventToEdit]);
 
-    const getCellClickHandler = (event, rowKey) => () => {
+    const getCellClickHandler = (event: ChartEvent, rowKey: RowKey) => () => {
         openEventEditor({ ...event, rowKey });
     };
 
     const handleBlur = () => {
-        const payload = { ...eventToEdit, [eventToEdit.rowKey]: eventValue };
-        delete payload.rowKey;
+        if (eventToEdit?.rowKey) {
+            const payload = { ...eventToEdit, [eventToEdit.rowKey]: eventValue };
+            delete payload.rowKey;
 
-        editEvent(payload);
+            editEvent(payload);
+        }
     };
 
-    const handleCellChange = (syntheticBaseEvent) => {
+    const handleCellChange = (syntheticBaseEvent: ChangeEvent<HTMLInputElement>) => {
         const value = syntheticBaseEvent.target.value;
 
         if (/^\d*$/.test(value)) {
@@ -32,10 +39,10 @@ const LiveTable = () => {
         }
     };
 
-    const renderCell = (event, rowKey) => {
+    const renderCell = (event: ChartEvent, rowKey: RowKey) => {
         return (
-            <div
-                className="relative p-2 border-t border-gray-300 max-w-[70px]"
+            <button
+                className="all-[unset] relative p-2 border-t border-gray-300 max-w-[70px]"
                 onClick={getCellClickHandler(event, rowKey)}
             >
                 {eventToEdit?.index === event.index && eventToEdit?.rowKey === rowKey && (
@@ -50,8 +57,10 @@ const LiveTable = () => {
                     />
                 )}
 
-                <div className="max-w-[70px] overflow-hidden text-ellipsis whitespace-nowrap">{event[rowKey]}</div>
-            </div>
+                <div className="max-w-[70px] overflow-hidden text-ellipsis whitespace-nowrap">
+                    {event[rowKey as keyof ChartEvent] as number}
+                </div>
+            </button>
         );
     };
 

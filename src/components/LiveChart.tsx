@@ -1,15 +1,14 @@
-import React from "react";
-
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { CategoricalChartState } from "recharts/types/chart/types";
 import { useLiveChartContext } from "../utils/hooks/useLiveChartContext";
 
 const LiveChart = () => {
     const { data, openEventEditor } = useLiveChartContext();
-    
+
     const eventsFiltered = data.events.slice(data.eventRange.start, data.eventRange.end);
 
-    const handleChartClick = (chartClickEvent) => {
-        const eventToEdit = chartClickEvent?.activePayload?.[0]?.payload;
+    const handleChartClick = (categoricalChartState: CategoricalChartState) => {
+        const eventToEdit = categoricalChartState?.activePayload?.[0]?.payload;
 
         if (eventToEdit) {
             openEventEditor(eventToEdit);
